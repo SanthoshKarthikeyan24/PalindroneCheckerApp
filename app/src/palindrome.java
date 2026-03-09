@@ -1,25 +1,32 @@
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.Queue;
+import java.util.LinkedList;
 
 public class palindrome {
 
     public static boolean isPalindrome(String input) {
 
         Stack<Character> stack = new Stack<>();
+        Queue<Character> queue = new LinkedList<>();
 
         for (int i = 0; i < input.length(); i++) {
-            stack.push(input.charAt(i));
+            char ch = input.charAt(i);
+            stack.push(ch);     // LIFO
+            queue.add(ch);      // FIFO
         }
 
-        for (int i = 0; i < input.length(); i++) {
-            char poppedChar = stack.pop();
+        while (!stack.isEmpty()) {
 
-            if (input.charAt(i) != poppedChar) {
+            char fromStack = stack.pop();   // Last In First Out
+            char fromQueue = queue.remove(); // First In First Out
+
+            if (fromStack != fromQueue) {
                 return false; // Not a palindrome
             }
         }
 
-        return true;
+        return true; // Palindrome
     }
 
     public static void main(String[] args) {
