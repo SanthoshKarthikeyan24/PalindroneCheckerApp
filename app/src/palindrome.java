@@ -1,27 +1,23 @@
 import java.util.Scanner;
-import java.util.Stack;
-import java.util.Queue;
+import java.util.Deque;
 import java.util.LinkedList;
 
 public class palindrome {
 
     public static boolean isPalindrome(String input) {
 
-        Stack<Character> stack = new Stack<>();
-        Queue<Character> queue = new LinkedList<>();
+        Deque<Character> deque = new LinkedList<>();
 
         for (int i = 0; i < input.length(); i++) {
-            char ch = input.charAt(i);
-            stack.push(ch);     // LIFO
-            queue.add(ch);      // FIFO
+            deque.addLast(input.charAt(i));
         }
 
-        while (!stack.isEmpty()) {
+        while (deque.size() > 1) {
 
-            char fromStack = stack.pop();   // Last In First Out
-            char fromQueue = queue.remove(); // First In First Out
+            char front = deque.removeFirst();
+            char rear = deque.removeLast();
 
-            if (fromStack != fromQueue) {
+            if (front != rear) {
                 return false; // Not a palindrome
             }
         }
