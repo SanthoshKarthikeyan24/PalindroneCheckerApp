@@ -1,89 +1,82 @@
-import java.util.Scanner;
+import java.util.*;
 import java.util.Stack;
 import java.util.Deque;
 import java.util.LinkedList;
 
-// Strategy interface
-interface PalindromeStrategy {
-    boolean isPalindrome(String input);
-}
+public class palindrome {
 
-// Stack-based strategy
-class StackStrategy implements PalindromeStrategy {
-
-    @Override
-    public boolean isPalindrome(String input) {
-        Stack<Character> stack = new Stack<>();
-        for (char ch : input.toCharArray()) {
-            stack.push(ch);
+    public static boolean charArrayPalindrome(String input) {
+        char[] arr = input.toCharArray();
+        int start = 0, end = arr.length - 1;
+        while (start < end) {
+            if (arr[start] != arr[end]) return false;
+            start++; end--;
         }
+        return true;
+    }
+
+    public static boolean stackPalindrome(String input) {
+        Stack<Character> stack = new Stack<>();
+        for (char ch : input.toCharArray()) stack.push(ch);
         for (int i = 0; i < input.length(); i++) {
             if (stack.pop() != input.charAt(i)) return false;
         }
         return true;
     }
-}
 
-// Deque-based strategy
-class DequeStrategy implements PalindromeStrategy {
 
-    @Override
-    public boolean isPalindrome(String input) {
+    public static boolean dequePalindrome(String input) {
         Deque<Character> deque = new LinkedList<>();
-        for (char ch : input.toCharArray()) {
-            deque.addLast(ch);
-        }
+        for (char ch : input.toCharArray()) deque.addLast(ch);
         while (deque.size() > 1) {
             if (deque.removeFirst() != deque.removeLast()) return false;
         }
         return true;
     }
-}
 
-// Context class
-class PalindromeCheckerContext {
-
-    private PalindromeStrategy strategy;
-
-    public PalindromeCheckerContext(PalindromeStrategy strategy) {
-        this.strategy = strategy;
+    public static boolean recursivePalindrome(String input, int start, int end) {
+        if (start >= end) return true;
+        if (input.charAt(start) != input.charAt(end)) return false;
+        return recursivePalindrome(input, start + 1, end - 1);
     }
-
-    public void setStrategy(PalindromeStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    public boolean check(String input) {
-        return strategy.isPalindrome(input);
-    }
-}
-
-// Main application
-public class palindrome {
 
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Enter a string: ");
+        System.out.print("Enter a string for performance test: ");
         String input = scanner.nextLine();
 
-        System.out.println("Choose strategy: 1-Stack  2-Deque");
-        int choice = scanner.nextInt();
+        Map<String, Long> times = new LinkedHashMap<>();
 
-        PalindromeStrategy strategy;
-        if (choice == 1) {
-            strategy = new StackStrategy();
-        } else {
-            strategy = new DequeStrategy();
-        }
 
-        PalindromeCheckerContext context = new PalindromeCheckerContext(strategy);
+        long start = System.nanoTime();
+        charArrayPalindrome(input);
+        long end = System.nanoTime();
+        times.put("Char Array", end - start);
 
-        if (context.check(input)) {
-            System.out.println("The string is a Palindrome.");
-        } else {
-            System.out.println("The string is NOT a Palindrome.");
+        // Stack
+        start = System.nanoTime();
+        stackPalindrome(input);
+        end = System.nanoTime();
+        times.put("Stack", end - start);
+
+        // Deque
+        start = System.nanoTime();
+        dequePalindrome(input);
+        end = System.nanoTime();
+        times.put("Deque", end - start);
+
+        // Recursive
+        start = System.nanoTime();
+        recursivePalindrome(input, 0, input.length() - 1);
+        end = System.nanoTime();
+        times.put("Recursive", end - start);
+
+        // Display results
+        System.out.println("\nPalindrome Algorithm Performance (nanoseconds):");
+        for (Map.Entry<String, Long> entry : times.entrySet()) {
+            System.out.printf("%-10s : %d ns%n", entry.getKey(), entry.getValue());
         }
 
         scanner.close();
